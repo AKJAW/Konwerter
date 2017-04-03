@@ -18,13 +18,15 @@ from kivy.uix.bubble import Bubble
 from textinput import TextInput as ModuleTextInput
 from kivy.uix.togglebutton import ToggleButton
 import config as cfg
+import os.path
 #on_resize(width, height)
 
 import kivy
 kivy.require('1.9.1')
 from kivy.app import App
 
-
+# print()
+# print()
 
 spinner_font_size = 15
 arrow_size = 40
@@ -86,7 +88,7 @@ class MyApp(App):
             pos_hint={'right': 1.503, 'y': 0},
         )
         drawerImageLayout.canvas.add(drawerBar)
-        drawerArrowImage = Image(source='arrow.png', size_hint_y=None, height=arrow_size)
+        drawerArrowImage = Image(source=os.path.join(os.getcwd(), 'images', 'arrow.png'), size_hint_y=None, height=arrow_size)
         drawerArrowLayout.add_widget(drawerArrowImage)
         drawerArrowLayoutNest = RelativeLayout()
         # drawerArrowLayoutNest.add_widget(InvisibleButton)
@@ -383,10 +385,10 @@ class MyApp(App):
 
         if len(self.tutorialLayout.children) == 0:
             if platform == 'win' or platform == 'linux':
-                self.tutorial_arrow_image = Image(source='tutorial_arrow.png', size_hint_y=None, height=Window.width/16,
+                self.tutorial_arrow_image = Image(source=os.path.join(os.getcwd(), 'images', 'tutorial_arrow.png'), size_hint_y=None, height=Window.width/16,
                                         pos_hint={'x': .46, 'top': self.firstNumberspinner.pos_hint['top'] - .22})
             else:
-                self.tutorial_arrow_image = Image(source='tutorial_arrow.png', size_hint_y=None,
+                self.tutorial_arrow_image = Image(source=os.path.join(os.getcwd(), 'images', 'tutorial_arrow.png'), size_hint_y=None,
                                                   height=Window.width / 9,
                                                   pos_hint={'x': .41, 'top': self.firstNumberspinner.pos_hint['top'] - .22})
             self.tutorialLayout.add_widget(self.tutorial_arrow_image)
