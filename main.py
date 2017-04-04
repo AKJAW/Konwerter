@@ -200,7 +200,7 @@ class MyApp(App):
         if platform == 'win' or platform == 'linux' or platform == 'macosx':
             self.fontSlider.max = 25
         else:
-            self.fontSlider.max = 60
+            self.fontSlider.max = 50
         self.some_label = Label(text='Rozmiar czcionki '+str(self.convertButton.font_size), size_hint=(1, 0.6), halign='left')
         self.fontSlider.bind(value=self.onSliderValueChange)
         self.sliderConfirmButton = Button(text="Zastosuj", font_size=self.buttonFontSize, size_hint=(1, 0.6))
