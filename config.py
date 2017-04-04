@@ -16,7 +16,7 @@ class Config:
     def createDefaultConfig(self):
         self.config = ConfigParser.ConfigParser()
         self.config.add_section("Settings")
-        self.config.set("Settings", "font_size", "10")
+        self.config.set("Settings", "font_size", "0")
         self.config.set("Settings", "arrow_size", "10")
 
 
@@ -28,9 +28,13 @@ class Config:
         self.config = ConfigParser.ConfigParser()
         self.config.read(self.path)
 
-    def get(self, what):
-        return self.config.get("Settings", what)
+    def getSettings(self, what):
+        try:
+            return float(self.config.get("Settings", what))
+        except ValueError:
+            return 0
 
-    def set(self, what, value):
+    def setSettings(self, what, value):
         self.config.set("Settings", what, value)
         self.createFile()
+

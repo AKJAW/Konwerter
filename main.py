@@ -19,57 +19,71 @@ from textinput import TextInput as ModuleTextInput
 from kivy.uix.togglebutton import ToggleButton
 import config as cfg
 import os.path
-#on_resize(width, height)
+from kivy.uix.slider import Slider
 
 import kivy
+
 kivy.require('1.9.1')
 from kivy.app import App
 
-# print()
-# print()
 
-spinner_font_size = 15
-arrow_size = 40
+
+
 
 class MyApp(App):
     def build(self):
         self.config = cfg.Config('settings.ini')
+        try:
+            configFont = self.getConfigFont('s')
+        except:
+            configFont = 22
+        print(configFont)
+        if platform == 'win' or platform == 'linux' or platform == 'macosx':
+            arrow_size = 40
+            self.defaultFont = 15.0
+            if configFont == 0:
+                self.buttonFontSize = 15
+            else:
+                self.buttonFontSize = configFont
+
+        else:
+            arrow_size = 160
+            self.defaultFont = Window.width / 25
+            if configFont == 0:
+                self.buttonFontSize = Window.width / 25
+            else:
+                self.buttonFontSize = configFont
+
+        print(self.buttonFontSize)
+
+
         self.createSpinners()
         self.navigationdrawer = NavigationDrawer()
 
         self.naviTopSidePanel = BoxLayout(orientation='vertical')
         self.naviTopSidePanel.add_widget(Label(text=str(platform)))
-        # self.naviOneOperationButton = Button(text='      Dzialania\nna jednej liczbie', on_press = self.naviOptionOne,
-        #                                          font_size=spinner_font_size)
-        # self.naviTopSidePanel.add_widget(self.naviOneOperationButton)
+
         self.naviOneOperationToggle = ToggleButton(group='layout', state='down', allow_no_selection=False,
                                                 text = '      Dzialania\nna jednej liczbie', on_press = self.naviOptionOne,
-                                                font_size = spinner_font_size)
+                                                font_size = self.buttonFontSize)
         self.naviTopSidePanel.add_widget(self.naviOneOperationToggle)
 
-        # self.naviTwoOperationButton = Button(text='        Dzialania\nna dwoch liczbach', on_press = self.naviOptionTwo,
-        #                                      font_size=spinner_font_size, background_color=(1, 1, 1, 0.15))
-        # ''',on_press=self.second_change_action'''
-        # self.naviTopSidePanel.add_widget(self.naviTwoOperationButton)
-        self.naviOneOperationToggle = ToggleButton(group='layout', allow_no_selection=False,
+        self.naviTwoOperationToggle = ToggleButton(group='layout', allow_no_selection=False,
                                                    text='        Dzialania\nna dwoch liczbach',
                                                    on_press=self.naviOptionTwo,
-                                                   font_size=spinner_font_size)
-        self.naviTopSidePanel.add_widget(self.naviOneOperationToggle)
-        self.naviFontButton = Button(text='Opcje czcionki', on_press = self.setConfig,
-                                             font_size=spinner_font_size, background_color=(1, 1, 1, 1))
+                                                   font_size=self.buttonFontSize)
+        self.naviTopSidePanel.add_widget(self.naviTwoOperationToggle)
+        self.naviFontButton = Button(text='Opcje czcionki', on_press = self.showFontSlider,
+                                             font_size=self.buttonFontSize, background_color=(1, 1, 1, 1))
 
         self.naviBottomSidePanel = BoxLayout(orientation='vertical')
         self.naviBottomSidePanel.add_widget(Label(text='Dodatkowe\n     opcje'))
-        # self.pipeButton = Button(text='Dodaj pionowa kreske')
-        self.pipeToggle = ToggleButton(text='Dodaj pionowa kreske')
+        self.pipeToggle = ToggleButton(text='Dodaj pionowa kreske', font_size=self.buttonFontSize)
         self.pipeToggle.bind(on_press=self.checkThePipe)
-        #self.pipeButton.bind(on_press=self.check_pipe)
-        # self.naviBottomSidePanel.add_widget(self.pipeButton)
         self.naviBottomSidePanel.add_widget(self.pipeToggle)
-        # self.naviBottomSidePanel.add_widget(self.naviFontButton)
+        self.naviBottomSidePanel.add_widget(self.naviFontButton)
 
-        #size=(5, Window.height + 5),posdrawerBar=(1, -1), size_hint=(1, 1)
+
         drawerBar = InstructionGroup()
         drawer = Rectangle(size=(5, Window.height+1000))
         drawerBar.add(Color(10, 10, 10, 0.7))
@@ -79,7 +93,7 @@ class MyApp(App):
 
 
         )
-        #drawerImageLayout.canvas.add(drawerBar)
+
         InvisibleButton = Button(size_hint=(1, .07), opacity=.1)
         InvisibleButton.bind(on_press=lambda j: self.navigationdrawer.toggle_state())
 
@@ -91,7 +105,7 @@ class MyApp(App):
         drawerArrowImage = Image(source=os.path.join(os.getcwd(), 'images', 'arrow.png'), size_hint_y=None, height=arrow_size)
         drawerArrowLayout.add_widget(drawerArrowImage)
         drawerArrowLayoutNest = RelativeLayout()
-        # drawerArrowLayoutNest.add_widget(InvisibleButton)
+
         drawerArrowLayoutNest.add_widget(drawerArrowLayout)
         drawerArrowLayoutNest.add_widget(drawerImageLayout)
 
@@ -132,16 +146,16 @@ class MyApp(App):
         self.resultTextOutput = ModuleTextInput(text='', size_hint=(.98, .30), readonly=True, use_bubble=True, bubble_pos=23,
                                            pos_hint={'top': self.firstTextInput.pos_hint['top'] - .5, 'x': .01})
         self.decButton = Button(text='DEC', on_press=self.buildTest, size_hint=(.325, .10),
-                                 background_color=(1, 1, 1, 1),
+                                 background_color=(1, 1, 1, 1), font_size=self.buttonFontSize,
                                  pos_hint={'top': self.resultTextOutput.pos_hint['top'] + .1,
                                            'x': .01})
         self.binButton = Button(text='BIN', on_press=self.buildTest, size_hint=(self.decButton.size_hint[0], .10),
-                                 background_color=(1, 1, 1, 0.5),
+                                 background_color=(1, 1, 1, 0.5), font_size=self.buttonFontSize,
                                  pos_hint={'top': self.resultTextOutput.pos_hint['top'] + .1,
                                            'x': self.decButton.pos_hint['x'] + .327})
         self.hexButton = Button(text='HEX', on_press=self.buildTest,
                                  size_hint=(self.binButton.size_hint[0], .10),
-                                 background_color=(1, 1, 1, 0.5),
+                                 background_color=(1, 1, 1, 0.5), font_size=self.buttonFontSize,
                                  pos_hint={'top': self.resultTextOutput.pos_hint['top'] + .1,
                                            'x': self.binButton.pos_hint['x'] + .327})
         self.resultDict = {'DEC':0, 'BIN':1, 'HEX':2}
@@ -154,21 +168,20 @@ class MyApp(App):
         self.bottomWindow.add_widget(self.hexButton)
         self.bottomWindow.add_widget(self.resultTextOutput)
 
+
+
         self.mainWindow = FloatLayout()
         self.mainWindow.add_widget(self.bottomWindow)
-        #self.spinner = spinner
-        #self.firstNumberspinner.bind(text=self.firstNumberspinner.setChoice)
         self.mainWindow.add_widget(self.firstTextInput)
         self.mainWindow.add_widget(self.firstNumberspinner)
         while len(self.twoOperationLayout.children) != 0:
             self.twoOperationLayout.remove_widget(self.twoOperationLayout.children[0])
         self.mainWindow.add_widget(self.twoOperationLayout)
-        #print (self.firstNumberspinner.choice)
-        #print (self.firstNumberspinner.text)
         self.mainWindow.add_widget(Label(text='Wyniki', size_hint=(.98, .20),
                                      pos_hint={'top': self.firstTextInput.pos_hint['top'] - .273, 'x': .01}))
-        self.mainWindow.add_widget(Button(text='Konwertuj', on_press=self.manageFunctions, size_hint=(.2, .10),
-                                      pos_hint={'top': 0.74, 'x': .40}))
+        self.convertButton = Button(text='Konwertuj', on_press=self.manageFunctions, size_hint=(.2, .10),
+                                      pos_hint={'top': 0.74, 'x': .40}, font_size=self.buttonFontSize)
+        self.mainWindow.add_widget(self.convertButton)
         self.tutorialLayout = RelativeLayout()
         self.mainWindow.add_widget(self.tutorialLayout)
         self.mainWindow.add_widget(InvisibleButton)
@@ -180,14 +193,76 @@ class MyApp(App):
 
         return self.navigationdrawer
 
-    def getConfig(self, btn):
-        return self.config.get('font_size')
+    def showFontSlider(self, btn):
 
-    def setConfig(self, btn):
-        i=int(self.getConfig(btn))
-        i+=1
-        self.config.set('font_size', str(i))
-        self.resultTextOutput.text=str(i)
+        sliderLayout = BoxLayout(orientation='vertical')
+        self.fontSlider = Slider(value_track=True, step=1, value=self.convertButton.font_size, size_hint=(1, 0.2))
+        if platform == 'win' or platform == 'linux' or platform == 'macosx':
+            self.fontSlider.max = 25
+        else:
+            self.fontSlider.max = 60
+        self.some_label = Label(text='Rozmiar czcionki '+str(self.convertButton.font_size), size_hint=(1, 0.6), halign='left')
+        self.fontSlider.bind(value=self.onSliderValueChange)
+        self.sliderConfirmButton = Button(text="Zastosuj", font_size=self.buttonFontSize, size_hint=(1, 0.6))
+        self.sliderDefaultButton = Button(text="Domyslne", font_size=self.buttonFontSize, size_hint=(1, 0.6))
+        sliderButtonLayout = BoxLayout(orientation='horizontal')
+        sliderButtonLayout.add_widget(self.sliderConfirmButton)
+        sliderButtonLayout.add_widget(self.sliderDefaultButton)
+        sliderLayout.add_widget(self.some_label)
+        sliderLayout.add_widget(self.fontSlider)
+        sliderLayout.add_widget(sliderButtonLayout)
+        self.fontPopup = Popup(title='czcionka',auto_dismiss=False,
+                      content=sliderLayout,
+                      size_hint=(0.7, 0.3),
+                      # size=(400, 200)
+                      )
+        self.sliderConfirmButton.bind(on_press=self.setConfigFont)
+        self.sliderDefaultButton.bind(on_press=self.setDefaultFont)
+        self.fontPopup.open()
+
+    def onSliderValueChange(self, btn, value):
+        self.buttonFontSize = value
+        self.some_label.text = 'Rozmiar czcionki '+str(value)
+        self.firstNumberspinner.font_size = value
+        self.secondNumberspinner.font_size = value
+        self.mathSpinner.font_size = value
+        self.binButton.font_size = value
+        self.decButton.font_size = value
+        self.hexButton.font_size = value
+        self.naviOneOperationToggle.font_size = value
+        self.naviTwoOperationToggle.font_size = value
+        self.convertButton.font_size = value
+        self.pipeToggle.font_size = value
+        self.naviFontButton.font_size = value
+        self.sliderConfirmButton.font_size = value
+        self.sliderDefaultButton.font_size = value
+
+    def setDefaultFont(self, btn):
+        value = self.defaultFont
+        self.fontSlider.value = value
+        self.some_label.text = 'Rozmiar czcionki ' + str(value)
+        self.firstNumberspinner.font_size = value
+        self.secondNumberspinner.font_size = value
+        self.mathSpinner.font_size = value
+        self.binButton.font_size = value
+        self.decButton.font_size = value
+        self.hexButton.font_size = value
+        self.naviOneOperationToggle.font_size = value
+        self.naviTwoOperationToggle.font_size = value
+        self.convertButton.font_size = value
+        self.pipeToggle.font_size = value
+        self.naviFontButton.font_size = value
+        self.sliderConfirmButton.font_size = value
+        self.sliderDefaultButton.font_size = value
+
+
+    def getConfigFont(self, btn):
+        return self.config.getSettings('font_size')
+
+    def setConfigFont(self, btn):
+        self.config.setSettings('font_size', str(self.convertButton.font_size))
+        self.fontPopup.dismiss()
+
 
     def layTheSpace(self):
         for index in xrange(len(self.firstResultList)):
@@ -290,39 +365,6 @@ class MyApp(App):
         return btn.text
 
 
-    def change_action(self, btn):
-        self.naviOneOperationButton.background_color = (1, 1, 1, 1)
-        self.naviTwoOperationButton.background_color = (1, 1, 1, 0.15)
-
-        global math_spinner
-        math_spinner.text = 'brak'
-
-        global second_numeral_system
-        second_numeral_system = 'Wybierz'
-        second_spinner.text = 'Wybierz'
-        #print second_spinner.text, 'ttttttttttttttttu'
-        self.second_textinput.text = ''
-
-        #print len(self.math_spinner_layout.children)
-        if len(self.math_spinner_layout.children) != 0:
-            self.second_textinput.text = ''
-            while len(self.math_spinner_layout.children) != 0:
-                self.math_spinner_layout.remove_widget(self.math_spinner_layout.children[0])
-            #self.math_spinner
-
-
-
-        if len(self.math_spinner_layout.children) == 0:
-            while len(self.second_math_spinner_layout.children) != 0:
-                self.second_math_spinner_layout.remove_widget(self.second_math_spinner_layout.children[0])
-            self.second_math_spinner_label = Label(text='Wybierz dzialanie', size_hint=(.33, .20),
-                                                   pos_hint={'top': self.textinput.pos_hint['top'] - .13, 'x': .665})
-            self.second_math_spinner_layout.add_widget(self.second_math_spinner_label)
-            self.second_math_spinner = second_math_spinner
-            self.second_math_spinner_layout.add_widget(self.second_math_spinner)
-
-        return second_math_action
-
 
     def createSpinners(self):
         self.firstNumberspinner = MySpinner(
@@ -331,7 +373,7 @@ class MyApp(App):
             # available values
             values=('Dec', 'Bin', 'Hex'),
             text_align='center',
-            font_size=spinner_font_size,
+            font_size=self.buttonFontSize,
             # bold = True,
             # text_size= (spinner.width, None),
             # size: self.texture_size
@@ -346,7 +388,7 @@ class MyApp(App):
             text=' System\nliczbowy',
             # available values
             values=('Dec', 'Bin', 'Hex', 'Wybierz'),
-            font_size=spinner_font_size,
+            font_size=self.buttonFontSize,
             # just for positioning in our example
             size_hint=(.23, .1),
             pos_hint={'top': self.firstNumberspinner.pos_hint['top'] - .105, 'right': self.firstNumberspinner.pos_hint['right']})
@@ -357,7 +399,7 @@ class MyApp(App):
             # default value shown
             text='brak',
             # available values
-            font_size=spinner_font_size,
+            font_size=self.buttonFontSize,
             values=('brak', '+', '-', '*', '/'),
             # just for positioning in our example
             size_hint=(.2, .10),
